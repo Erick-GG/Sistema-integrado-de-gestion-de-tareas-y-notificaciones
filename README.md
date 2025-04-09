@@ -2,7 +2,7 @@
 
 Este flujo de trabajo en **n8n** automatiza la asignación de tareas, seguimiento de pendientes y envío de notificaciones en múltiples plataformas como **Slack, WhatsApp y Email**. También registra y actualiza datos en **Google Sheets y Asana**.
 
-![simulacion](./media/workflow.png "Vista previa del workflow")
+![previa](./media/workflow.png)
 
 ## Descripción
 
@@ -12,7 +12,7 @@ El sistema permite gestionar tareas de manera eficiente a través de la integrac
 - **Asana**: Crea y gestiona tareas automáticamente.
 - **Slack, WhatsApp & Email**: Notifica asignaciones a los responsables.
 
-
+![simulacion](./media/SimulacionFuncionamiento.mp4)
 
 ## Flujo de Trabajo
 
