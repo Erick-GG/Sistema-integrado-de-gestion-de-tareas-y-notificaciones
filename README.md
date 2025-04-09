@@ -7,8 +7,8 @@ Este flujo de trabajo en **n8n** automatiza la asignación de tareas, seguimient
 ## Descripción
 
 El sistema permite gestionar tareas de manera eficiente a través de la integración con:
-- **Google Forms**: Recibe tareas mediante formularios.
-- **Google Sheets**: Almacena datos de tareas y proyectos.
+- **Google Forms**: Recibe tareas mediante un formulario.
+- **Google Sheets**: Almacena datos de tareas proyectos.
 - **Asana**: Crea y gestiona tareas automáticamente.
 - **Slack, WhatsApp & Email**: Notifica asignaciones a los responsables.
 
@@ -16,27 +16,46 @@ El sistema permite gestionar tareas de manera eficiente a través de la integrac
 
 ## Flujo de Trabajo
 
-1. **Google Forms Trigger**  
-   - Detecta nuevas respuestas en el formulario y obtiene la información de la tarea.
+Las tareas se capturan a través de un formulario de Google que solicita los siguientes campos:  
+ 
+- **Nombre de la tarea**  
+- **Nivel de urgencia**  
+- **Descripción de la tarea**  
+- **Proyecto involucrado**  
+- **Persona designada**  
+- **Fecha límite**  
+- **Hora límite (24H)**  
 
-2. **Google Sheets (Datos de usuario y proyecto)**  
-   - Busca datos adicionales en una hoja de Google Sheets.
+Los campos de **Proyecto involucrado** y **Persona designada** utilizan datos provenientes de hojas de Google mediante triggers usando [Apps Script](./scripts-appscript
+):  
 
-3. **Creación de la tarea en Asana**  
-   - Verifica si el proyecto existe en Asana.
-   - Si no existe, lo crea y lo almacena en Google Sheets.
-   - Registra la nueva tarea en el proyecto correspondiente.
+- **Proyecto involucrado**: Carga opciones desde otra hoja que enumera los proyectos creados en Asana. Es necesario añadir al menos un proyecto manualmente, y se puede crear un nuevo proyecto directamente desde el formulario si se elige la opción "Otro".
+[Script necesario](./scripts-appscript/proyectos)  
+  
+- **Persona designada**: Se presenta como un menú desplegable que carga nombres de miembros desde una hoja de Google que almacena los datos de nombre, correo y teléfono. Es imprescindible que los nombres se correspondan con las cuentas de los miembros en Asana y Slack además deben ser cargados manualmente(se podría automatizar).  
 
-4. **Notificaciones y Asignación**  
-   - Clasifica la urgencia de la tarea (`Alta`, `Media`, `Baja`).
-   - Envia notificaciones personalizadas por **Slack, Email y WhatsApp**.
+### Proceso de Gestión de Tareas  
 
-5. **Seguimiento de Pendientes**  
-   - Revisa tareas pendientes cada **hora**.
-   - Si una tarea sigue sin completarse después de **48 horas**, envía un **recordatorio**.
+Cuando se recibe una nueva entrada en el formulario, se activa un **trigger** en n8n que sigue estos pasos:  
 
-6. **Registro Final**  
-   - Registra todas las tareas y notificaciones en **Google Sheets** para auditoría.
+1. **Verificación del Proyecto**: Se consulta la hoja de proyectos para comprobar si el proyecto ya está registrado. Si no lo está, se crea un nuevo proyecto.  
+2. **Creación de Tarea**: Con los datos del formulario, se crea una tarea en Asana.  
+3. **Notificación de Asignación**: Según el nivel de urgencia definido en el formulario:  
+   - **Alta**: Notificación a través de WhatsApp.  
+   - **Media**: Notificación por correo electrónico.  
+   - **Baja**: Notificación por Slack.  
+4. **Registro de Interacción**: Se guarda la interacción con los datos de la tarea (ID en Asana, estado, persona asignada, fecha y hora límite) en un formulario de registro.  
+
+### Flujo Alternativo: Monitoreo de Tareas  
+
+Dentro del mismo flujo, hay un trigger de tiempo que se ejecuta cada hora para monitorear las tareas registradas. Este proceso realiza lo siguiente:  
+
+1. **Verificación de Tareas**: Se obtiene una lista de todas las tareas por proyecto.  
+2. **Recorrido de Tareas**: Se utiliza un nodo de bucle para examinar cada tarea:  
+   - Si la tarea está completada, se marca como completada en la hoja de interacciones.  
+   - Si no está completada y ha pasado más de 48 horas desde su creación, se verifica su urgencia para enviar un recordatorio.  
+3. **Notificación de Recordatorio**: Si la tarea no ha sido completada y ha pasado el umbral de 48 horas, se envía un recordatorio a la persona asignada.  
+
 
 ---
 
@@ -44,10 +63,10 @@ El sistema permite gestionar tareas de manera eficiente a través de la integrac
 - **n8n**: Instancia local (Docker) o en **n8n Cloud**.
 - **Cuentas y credenciales**:
   - Google Sheets API (para almacenar y recuperar datos).
-    - Formulario con los campos:'Nombre de la tarea:', 'Nivel de urgencia', 'Descripción de la tarea:', 'Proyecto involucrado: (tipo opciones)', 'Persona designada:(tipo lista desplegable)', 'Fecha limite' y	'Hora limite(24H)'.
-    - Hoja de calculo (para almacenar informacion de los **miembros** para usar en asana/slack/whatsapp) con los campos: 'NOMBRE', 'CORREO' y 'Telefono'.
-    - Hoja de calculo (para almacenar informacion de los **proyectos** de asana) con los campos: 'Nombre' y 'ID'
-    - Hoja de calculo (para almacenar las interacciones) con los campos: 'TAREA', 'DESCRIPCION', 'PROYECTO', 'PRIORIDAD', 'PERSONA DESIGNADA' y 'FECHA LIMITE'.
+    - Formulario con los campos *recomendados*:'Nombre de la tarea:', 'Nivel de urgencia', 'Descripción de la tarea:', 'Proyecto involucrado: (tipo opciones)', 'Persona designada:(tipo lista desplegable)', 'Fecha limite' y	'Hora limite(24H)'.
+    - Hoja de calculo (para almacenar informacion de los **miembros** para usar en asana/slack/whatsapp) con los campos *recomendados*: 'NOMBRE', 'CORREO' y 'Telefono'.
+    - Hoja de calculo (para almacenar informacion de los **proyectos** de asana) con los campos *recomendados*: 'Nombre' y 'ID'
+    - Hoja de calculo (para almacenar las interacciones) con los campos *recomendados*: 'ID EN ASANA', 'TAREA', 'DESCRIPCION', 'PROYECTO', 'PRIORIDAD', 'PERSONA DESIGNADA', 'FECHA LIMITE' y 'ESTADO'.
   - Google Apps Script (para automatizar las opciones en el formulario de registro de tareas)
   - Asana API (para gestión de tareas y proyectos).
   - Slack API (para enviar notificaciones).
@@ -92,4 +111,4 @@ Configura las credenciales en "Credentials".
 ¡Las contribuciones son bienvenidas! Por favor, abre un issue o un pull request en este repositorio.
 
 # Autores
-Erick González Gómez - Apolo Reynoso Ruíz
+Apolo Reynoso Ruíz - Erick González Gómez
