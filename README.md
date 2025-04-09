@@ -26,13 +26,15 @@ Las tareas se capturan a través de un formulario de Google que solicita los sig
 - **Fecha límite**  
 - **Hora límite (24H)**  
 
-Los campos de **Proyecto involucrado** y **Persona designada** utilizan datos provenientes de hojas de Google mediante triggers usando [Apps Script](./scripts-appscript
-):  
+Los campos de **Proyecto involucrado** y **Persona designada** utilizan datos provenientes de hojas de Google mediante triggers usando Apps Script:  
 
 - **Proyecto involucrado**: Carga opciones desde otra hoja que enumera los proyectos creados en Asana. Es necesario añadir al menos un proyecto manualmente, y se puede crear un nuevo proyecto directamente desde el formulario si se elige la opción "Otro".
-[Script necesario](./scripts-appscript/proyectos)  
+
+[Script Aquí](./scripts-appscript/proyectos/proyectos.gs)  
   
 - **Persona designada**: Se presenta como un menú desplegable que carga nombres de miembros desde una hoja de Google que almacena los datos de nombre, correo y teléfono. Es imprescindible que los nombres se correspondan con las cuentas de los miembros en Asana y Slack además deben ser cargados manualmente(se podría automatizar).  
+
+[Script Aquí](./scripts-appscript/miembros/miembros.gs)
 
 ### Proceso de Gestión de Tareas  
 
