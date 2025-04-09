@@ -12,7 +12,7 @@ El sistema permite gestionar tareas de manera eficiente a través de la integrac
 - **Asana**: Crea y gestiona tareas automáticamente.
 - **Slack, WhatsApp & Email**: Notifica asignaciones a los responsables.
 
-![simulacion](./media/SimulacionFuncionamiento.mp4)
+![simulacion](./media/SimulacionFuncionamiento.gif)
 
 ## Flujo de Trabajo
 
