@@ -1,7 +1,12 @@
 /**
  * Script para actualizar opciones de una pregunta en Google Forms
  * asegurando que la opción "Otro:" se preserve correctamente
- */
+ *   
+ * Este script se utiliza para cargar los proyectos involucrados desde una hoja de cálculo a   
+ * un formulario de Google. Es esencial agregar manualmente al menos un proyecto existente  
+ * a la hoja de cálculo. Si no se han agregado proyectos, se deberá crear al menos uno   
+ * manualmente para que este script funcione correctamente.  
+ */  
 function actualizarPreguntaProyectoInvolucrado() {
   // Reemplaza estos IDs con los tuyos en tu sheet y/o formulario
   const FORM_ID = '<<tuFormID>>';
