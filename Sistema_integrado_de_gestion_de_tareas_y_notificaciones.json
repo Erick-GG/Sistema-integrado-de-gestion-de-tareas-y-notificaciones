@@ -1,0 +1,2235 @@
+{
+  "name": "Sistema integrado de gestion de tareas y notificaciones",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1KivEqnjrGNNlZoUMVdhM47UGtsO-HffH2aWceMLvoxI",
+          "mode": "list",
+          "cachedResultName": "RPA-test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KivEqnjrGNNlZoUMVdhM47UGtsO-HffH2aWceMLvoxI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 275342544,
+          "mode": "list",
+          "cachedResultName": "Respuestas de formulario 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KivEqnjrGNNlZoUMVdhM47UGtsO-HffH2aWceMLvoxI/edit#gid=275342544"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "name": "Google Forms Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        200
+      ],
+      "id": "b0845520-a847-4a3f-a77d-3f79964da168",
+      "notesInFlow": false,
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "f9WiffeAMiEp1rle",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1QGCQQqm0EOg6iOh36VTDF3nrfAcKM1efYeO0cpx0-7o",
+          "mode": "list",
+          "cachedResultName": "miembros",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QGCQQqm0EOg6iOh36VTDF3nrfAcKM1efYeO0cpx0-7o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QGCQQqm0EOg6iOh36VTDF3nrfAcKM1efYeO0cpx0-7o/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "NOMBRE",
+              "lookupValue": "={{ $('Limit1').item.json['Persona designada:'] }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -380,
+        420
+      ],
+      "id": "073a260b-5e4a-4f21-817c-de2fd9bda072",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workspace": "1114424571474755",
+        "name": "={{ $json['Nombre de la tarea:'] }}",
+        "otherProperties": {
+          "assignee": "={{ $json['Dirección de correo electrónico'] }}",
+          "due_on": "={{ $json['Fecha limite'] }}",
+          "notes": "={{ $json['Descripción de la tarea:'] }}",
+          "projects": "={{ $('Asana2').item.json.gid }}"
+        }
+      },
+      "name": "Create Asana Task",
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        640
+      ],
+      "id": "20e23ae0-1c77-4f74-a45a-030e99d51aa0",
+      "credentials": {
+        "asanaApi": {
+          "id": "o9Svjs1hMNKi8x4K",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "user",
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -340,
+        1080
+      ],
+      "id": "951590bb-d8da-4002-a1d7-c19e8bea5f45",
+      "name": "Slack1",
+      "webhookId": "ce5ee80e-c5ec-4a49-80b8-7d74f0fa3d71",
+      "credentials": {
+        "slackApi": {
+          "id": "o7biKSjwBXRCSJwi",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Supongamos que los items de entrada son pasados a la variable 'users'  \nconst users = $input.all(); // Recupera todos los usuarios  \nconst filterCriteria = $('Revisar prioridad').first().json['Dirección de correo electrónico'] || $('Revisar prioridad').first().json['Dirección de correo electrónico']; // Cambia esto por el correo o nombre de usuario que desees filtrar  \n\nconst filteredIds = users.filter(user => {  \n    // Comprueba si el correo o el nombre de usuario coincide con el criterio  \n    return user.json.profile.email === filterCriteria || user.json.name === filterCriteria;  \n}).map(user => user.json.id); // Recupera solo los IDs  \n\nreturn [{ json: { filteredIds } }]; // Devuelve los IDs filtrados  "
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        1080
+      ],
+      "id": "e73b0288-463d-4809-bfc8-53e08363ec94",
+      "name": "Obtener usuario id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b3146e7-897c-4279-80ee-916fbd1db68b",
+              "name": "Nombre de la tarea:",
+              "value": "={{ $('Google Forms Trigger').item.json['Nombre de la tarea:'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0cdf4457-cf21-45d5-ba87-8e105261425a",
+              "name": "Descripción de la tarea:",
+              "value": "={{ $('Google Forms Trigger').item.json['Descripción de la tarea:'] }}",
+              "type": "string"
+            },
+            {
+              "id": "d0601091-cfbb-41f8-96d8-912e1e51b464",
+              "name": "Nivel de urgencia",
+              "value": "={{ $('Google Forms Trigger').item.json['Nivel de urgencia'] }}",
+              "type": "string"
+            },
+            {
+              "id": "63e9226c-5bf7-4668-a78e-07093281a533",
+              "name": "Persona designada:",
+              "value": "={{ $('Google Forms Trigger').item.json['Persona designada:'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8c2101a7-7982-4c03-b9d2-87a42f0aa3cc",
+              "name": "Dirección de correo electrónico",
+              "value": "={{ $json.CORREO }}",
+              "type": "string"
+            },
+            {
+              "id": "c19d4e1f-9f17-411c-827a-99ed20cd7165",
+              "name": "Fecha limite",
+              "value": "={{ $('Google Forms Trigger').item.json['Fecha limite'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ac63ecf8-f9f6-468c-ade3-4a45021c75ac",
+              "name": "Hora limite(24H)",
+              "value": "={{ $('Limit1').item.json['Hora limite(24H)'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6d5f18f7-23d1-4fdf-8a9a-dffb4b375226",
+              "name": "Telefono",
+              "value": "={{ $json.Telefono}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -200,
+        420
+      ],
+      "id": "52b856ce-564d-4ab7-98d6-073feae6c5d7",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clonar el objeto de entrada para no modificarlo directamente\nconst output = { ...$json };\n\n// Obtener la fecha desde el JSON de entrada\nconst fechaOriginal = output[\"Fecha limite\"];\n\nif (!fechaOriginal) {\n  output[\"Fecha limite\"] = \"Fecha no disponible\";\n  return [output];\n}\n\ntry {\n  // Separar la fecha por \"/\"\n  const partes = fechaOriginal.split(\"/\");\n\n  // Asegurar que tenemos día, mes y año\n  if (partes.length !== 3) {\n    output[\"Fecha limite\"] = \"Formato inválido\";\n    return [output];\n  }\n\n  // Convertir a formato YYYY-MM-DD\n  const dia = partes[0].padStart(2, \"0\");  // Asegurar que el día tenga 2 dígitos\n  const mes = partes[1].padStart(2, \"0\");  // Asegurar que el mes tenga 2 dígitos\n  const anio = partes[2];\n\n  output[\"Fecha limite\"] = `${anio}-${mes}-${dia}`;\n  return [output];\n\n} catch (error) {\n  output[\"Fecha limite\"] = \"Error en conversión\";\n  return [output];\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -700,
+        640
+      ],
+      "id": "e3c5fd4f-9a33-4ef9-8392-9edd870f4977",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Nivel de urgencia'] }}",
+                    "rightValue": "Alta",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "5e260f41-ef8c-45bc-a0e3-e5584877f3dc"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Urgencia Alta"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c81a48ea-9174-451a-9e63-159fbd7385c4",
+                    "leftValue": "={{ $json['Nivel de urgencia'] }}",
+                    "rightValue": "Media",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Urgencia Media"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f272a2f9-142b-46ad-a0a1-eefffe7ea487",
+                    "leftValue": "={{ $json['Nivel de urgencia'] }}",
+                    "rightValue": "Baja",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Urgencia Baja"
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": false
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -460,
+        920
+      ],
+      "id": "cc09d91a-69de-49bf-89e8-9eb97ac363e1",
+      "name": "Revisar prioridad"
+    },
+    {
+      "parameters": {
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "value": "={{ $json.filteredIds[0] }}",
+          "mode": "id"
+        },
+        "text": "=Hola {{ $('Revisar prioridad').last().json['Persona designada:'] }} {{ $('Revisar prioridad').last().json.Mensaje }}\n\nNombre: {{ $('Revisar prioridad').last().json['Nombre de la tarea:'] }}\nProyecto: {{ $('Revisar prioridad').last().json['Proyecto involucrado:'] }}\nDescripcion: {{ $('Revisar prioridad').last().json['Descripción de la tarea:'] }}\nPrioridad: {{ $('Revisar prioridad').last().json['Nivel de urgencia'] }}\nFecha limite: {{ $('Revisar prioridad').last().json['Fecha limite'] }}\nHora limite: {{ $('Revisar prioridad').last().json['Hora limite(24H)'] }}\nLink: {{ $('Revisar prioridad').last().json['Link a la tarea:'] }}\n",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "mrkdwn": true
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        1080
+      ],
+      "id": "02deca38-ae2c-4164-a939-9c5db79b811c",
+      "name": "Slack",
+      "webhookId": "5ec0f5d5-c89c-4319-ab91-22bd04698fe5",
+      "credentials": {
+        "slackApi": {
+          "id": "o7biKSjwBXRCSJwi",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "erikgonz71@gmail.com",
+        "toEmail": "={{ $json['Dirección de correo electrónico'] }}",
+        "subject": "Tarea asignada",
+        "emailFormat": "text",
+        "text": "=Hola {{ $json['Persona designada:'] }} {{ $json.Mensaje }}\nNombre: {{ $json['Nombre de la tarea:'] }}\nProyecto: {{ $json['Proyecto involucrado:'] }}\nDescripcion: {{ $json['Descripción de la tarea:'] }}\nPrioridad: {{ $json['Nivel de urgencia'] }}\nFecha limite: {{ $json['Fecha limite'] }}\nHora limite: {{ $json['Hora limite(24H)'] }}\nLink: {{ $json['Link a la tarea:'] }}",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        920
+      ],
+      "id": "2463ce90-0c85-4acf-9de9-1910c0646823",
+      "name": "Send Email",
+      "webhookId": "46624adc-ba02-434d-a85a-dd10a5274029",
+      "credentials": {
+        "smtp": {
+          "id": "AiX4YCB6EmBPwl0K",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ",
+          "mode": "list",
+          "cachedResultName": "proyectos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.name }}",
+            "ID": "={{ $json.gid }}"
+          },
+          "matchingColumns": [
+            "Nombre"
+          ],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -160,
+        200
+      ],
+      "id": "f0c14ce5-38ec-42b0-8d5d-a033e71adbb5",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0d12d3ab-68c1-462e-bbcc-cbf4139f7afc",
+              "leftValue": "={{ $input.item.json}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -520,
+        200
+      ],
+      "id": "56e0ad36-4a9e-4c38-bc6e-06e2df727fd6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "project",
+        "operation": "create",
+        "name": "={{ $('Limit1').item.json['Proyecto involucrado:'] }}",
+        "workspace": "1114424571474755",
+        "team": "1209891271527346",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        200
+      ],
+      "id": "0e5f8124-2bad-423f-b4d9-b1565fe3de77",
+      "name": "Asana1",
+      "credentials": {
+        "asanaApi": {
+          "id": "o9Svjs1hMNKi8x4K",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ",
+          "mode": "list",
+          "cachedResultName": "proyectos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Nombre",
+              "lookupValue": "={{ $json['Proyecto involucrado:'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -660,
+        200
+      ],
+      "id": "b099aa40-33fc-4dfb-ba02-4c9c06b8aaea",
+      "name": "Google Sheets2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "project",
+        "id": "={{ $json.ID }}"
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        420
+      ],
+      "id": "7f4373de-23c6-4ddf-a681-06a2ca50ef0d",
+      "name": "Asana2",
+      "credentials": {
+        "asanaApi": {
+          "id": "o9Svjs1hMNKi8x4K",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        200
+      ],
+      "id": "4506a8de-ae0b-4fbf-b6bf-b8e24a248bfa",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -700,
+        420
+      ],
+      "id": "f4bb0517-6943-44f0-884c-b1e7f0526995",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "610532922147857",
+        "recipientPhoneNumber": "={{ $json.Telefono.toString() }}",
+        "textBody": "=Hola {{ $json['Persona designada:'] }} {{ $json.Mensaje }}\nNombre: {{ $json['Nombre de la tarea:'] }}\nProyecto: {{ $json['Proyecto involucrado:'] }}\nDescripcion: {{ $json['Descripción de la tarea:'] }}\nPrioridad: {{ $json['Nivel de urgencia'] }}\nFecha limite: {{ $json['Fecha limite'] }}\nHora limite: {{ $json['Hora limite(24H)'] }}\nLink: {{ $json['Link a la tarea:'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        0,
+        740
+      ],
+      "id": "45e2fc89-0c09-41b7-a9f8-dad3a7d7139c",
+      "name": "WhatsApp Business Cloud1",
+      "webhookId": "e4cee3a2-4588-45b1-9f08-4f7d2d6c85bd",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "yHLfzwlAPuQNAF4R",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1780,
+        200
+      ],
+      "id": "d05f984d-b33d-45d7-9559-e8eb7268b5f7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ",
+          "mode": "list",
+          "cachedResultName": "proyectos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X-ogREQSHzQA2M_Orqkd4eizTqVKPMuI4IvnE4vnTwQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1600,
+        200
+      ],
+      "id": "3cd86f09-eaf5-41a3-8c48-04ea0e4f01b5",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "project": "={{ $json.ID }}"
+        }
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        440
+      ],
+      "id": "078ab16f-2498-4c19-a94e-acc4d2da476e",
+      "name": "Asana",
+      "credentials": {
+        "asanaApi": {
+          "id": "o9Svjs1hMNKi8x4K",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.gid }}"
+      },
+      "type": "n8n-nodes-base.asana",
+      "typeVersion": 1,
+      "position": [
+        -1620,
+        440
+      ],
+      "id": "952677f2-2da1-47b9-9dd6-24c352013168",
+      "name": "Asana3",
+      "credentials": {
+        "asanaApi": {
+          "id": "o9Svjs1hMNKi8x4K",
+          "name": "Asana account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1QGCQQqm0EOg6iOh36VTDF3nrfAcKM1efYeO0cpx0-7o",
+          "mode": "list",
+          "cachedResultName": "miembros",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QGCQQqm0EOg6iOh36VTDF3nrfAcKM1efYeO0cpx0-7o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QGCQQqm0EOg6iOh36VTDF3nrfAcKM1efYeO0cpx0-7o/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "NOMBRE",
+              "lookupValue": "={{ $('Loop Over tareas').item.json.assignee.name }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1300,
+        1100
+      ],
+      "id": "06563da9-aabf-4ca4-aa43-45bc41daf172",
+      "name": "Google Sheets4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas",
+          "mode": "list",
+          "cachedResultName": "registoActividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID EN ASANA",
+              "lookupValue": "={{ $('Loop Over tareas').item.json.gid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1160,
+        1100
+      ],
+      "id": "bd50f0af-eadc-4bc2-ac29-bed5c6edb2f0",
+      "name": "Google Sheets5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $json.created_at }}",
+        "timeUnit": "hours",
+        "duration": 48,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        940
+      ],
+      "id": "75a9df6b-3da6-467a-aa13-41576c505d73",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -1600,
+        940
+      ],
+      "id": "b904e1e8-f91f-4da2-b4ac-81d1ec5c64de",
+      "name": "Date & Time1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -640,
+        920
+      ],
+      "id": "764e781b-f44b-42bc-8824-3e83b24d715a",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d7b8c383-cd7c-4bf9-bdb7-e48ed4950a03",
+              "name": "ID EN ASANA",
+              "value": "={{ $json.gid }}",
+              "type": "string"
+            },
+            {
+              "id": "4b3146e7-897c-4279-80ee-916fbd1db68b",
+              "name": "Nombre de la tarea:",
+              "value": "={{ $('Code').item.json['Nombre de la tarea:'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0cdf4457-cf21-45d5-ba87-8e105261425a",
+              "name": "Descripción de la tarea:",
+              "value": "={{ $('Code').item.json['Descripción de la tarea:'] }}",
+              "type": "string"
+            },
+            {
+              "id": "d0601091-cfbb-41f8-96d8-912e1e51b464",
+              "name": "Nivel de urgencia",
+              "value": "={{ $('Code').item.json['Nivel de urgencia'] }}",
+              "type": "string"
+            },
+            {
+              "id": "63e9226c-5bf7-4668-a78e-07093281a533",
+              "name": "Persona designada:",
+              "value": "={{ $('Code').item.json['Persona designada:'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8c2101a7-7982-4c03-b9d2-87a42f0aa3cc",
+              "name": "Dirección de correo electrónico",
+              "value": "={{ $('Code').item.json['Dirección de correo electrónico'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c19d4e1f-9f17-411c-827a-99ed20cd7165",
+              "name": "Fecha limite",
+              "value": "={{ $('Code').item.json['Fecha limite'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ac63ecf8-f9f6-468c-ade3-4a45021c75ac",
+              "name": "Hora limite(24H)",
+              "value": "={{ $('Code').item.json['Hora limite(24H)'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6d5f18f7-23d1-4fdf-8a9a-dffb4b375226",
+              "name": "Telefono",
+              "value": "={{ $('Code').item.json.Telefono }}",
+              "type": "number"
+            },
+            {
+              "id": "2a23c7c6-8bd5-478c-8cdd-fc35a0a70217",
+              "name": "Proyecto involucrado:",
+              "value": "={{ $json.projects[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "457cc3a5-129a-4bd9-b4b1-e19cc51eb949",
+              "name": "Recordatorio",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "221feac7-f5b2-4385-b5e2-c614147e6028",
+              "name": "Link a la tarea:",
+              "value": "={{ $json.permalink_url }}",
+              "type": "string"
+            },
+            {
+              "id": "fe7eae74-26e7-4c96-a1df-3ca6ff52cdeb",
+              "name": "Mensaje",
+              "value": "se te ha asignado una nueva tarea!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -380,
+        640
+      ],
+      "id": "3bb4257b-f703-4001-8d5e-5919bbf23d8a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da67b8cb-aabb-41b2-9c5a-3e6359d2b777",
+              "name": "ID EN ASANA",
+              "value": "={{ $json['ID EN ASANA'] }}",
+              "type": "string"
+            },
+            {
+              "id": "4b3146e7-897c-4279-80ee-916fbd1db68b",
+              "name": "Nombre de la tarea:",
+              "value": "={{ $json.TAREA }}",
+              "type": "string"
+            },
+            {
+              "id": "0cdf4457-cf21-45d5-ba87-8e105261425a",
+              "name": "Descripción de la tarea:",
+              "value": "={{ $json.DESCRIPCION }}",
+              "type": "string"
+            },
+            {
+              "id": "d0601091-cfbb-41f8-96d8-912e1e51b464",
+              "name": "Nivel de urgencia",
+              "value": "={{ $json.PRIORIDAD }}",
+              "type": "string"
+            },
+            {
+              "id": "63e9226c-5bf7-4668-a78e-07093281a533",
+              "name": "Persona designada:",
+              "value": "={{ $json['PERSONA DESIGNADA'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8c2101a7-7982-4c03-b9d2-87a42f0aa3cc",
+              "name": "Dirección de correo electrónico",
+              "value": "={{ $('Google Sheets4').item.json.CORREO }}",
+              "type": "string"
+            },
+            {
+              "id": "c19d4e1f-9f17-411c-827a-99ed20cd7165",
+              "name": "Fecha limite",
+              "value": "={{ $json['FECHA LIMITE'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ac63ecf8-f9f6-468c-ade3-4a45021c75ac",
+              "name": "Hora limite(24H)",
+              "value": "={{ $json['HORA LIMITE'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6d5f18f7-23d1-4fdf-8a9a-dffb4b375226",
+              "name": "Telefono",
+              "value": "={{ $('Google Sheets4').item.json.Telefono }}",
+              "type": "number"
+            },
+            {
+              "id": "24842216-06fd-488f-92f6-d4fd56ceb46f",
+              "name": "Proyecto involucrado:",
+              "value": "={{ $json.PROYECTO }}",
+              "type": "string"
+            },
+            {
+              "id": "ddce597c-61bd-4c14-a137-532caf6bb252",
+              "name": "Recordatorio",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "684c2f28-d9fb-402d-b16a-3781e95706ff",
+              "name": "Link a la tarea:",
+              "value": "={{ $('Loop Over tareas').item.json.permalink_url }}",
+              "type": "string"
+            },
+            {
+              "id": "5f96e8be-858c-463a-99db-a21c895ae7b3",
+              "name": "Mensaje",
+              "value": "=tienes una tarea pendiente! Han pasado 48 horas desde que se te asigno, y no la haz completado :(",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1020,
+        1100
+      ],
+      "id": "3fdf44d8-606e-4810-82d9-9f6bc947fcda",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        220,
+        920
+      ],
+      "id": "6d41b302-adf8-4da8-9b00-051afff6e434",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4ad86825-112a-40aa-9878-78d3284d71ad",
+              "leftValue": "={{ $('Merge1').last().json.Recordatorio }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        1120
+      ],
+      "id": "5d0299de-2670-478a-b074-a7d3c6a532ca",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        660,
+        900
+      ],
+      "id": "155e859b-c3cf-4d79-90b5-eff211078494",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas",
+          "mode": "list",
+          "cachedResultName": "registoActividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TAREA": "={{ $('Merge1').last().json['Nombre de la tarea:'] }}",
+            "DESCRIPCION": "={{ $('Merge1').last().json['Descripción de la tarea:'] }}",
+            "PRIORIDAD": "={{ $('Merge1').last().json['Nivel de urgencia'] }}",
+            "PROYECTO": "={{ $('Merge1').last().json['Proyecto involucrado:'] }}",
+            "PERSONA DESIGNADA": "={{ $('Merge1').last().json['Persona designada:'] }}",
+            "FECHA LIMITE": "={{ $('Merge1').last().json['Fecha limite'] }}",
+            "ESTADO": "PENDIENTE",
+            "ID EN ASANA": "={{ $('Merge1').last().json['ID EN ASANA'] }}",
+            "HORA LIMITE": "={{ $('Merge1').last().json['Hora limite(24H)'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID EN ASANA",
+              "displayName": "ID EN ASANA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TAREA",
+              "displayName": "TAREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DESCRIPCION",
+              "displayName": "DESCRIPCION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PROYECTO",
+              "displayName": "PROYECTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRIORIDAD",
+              "displayName": "PRIORIDAD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PERSONA DESIGNADA",
+              "displayName": "PERSONA DESIGNADA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FECHA LIMITE",
+              "displayName": "FECHA LIMITE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HORA LIMITE",
+              "displayName": "HORA LIMITE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ESTADO",
+              "displayName": "ESTADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        500,
+        900
+      ],
+      "id": "f58a7263-3cea-4a2b-8e1e-dd39548c1da6",
+      "name": "Google Sheets7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Nueva entrada en el formulario\n- **Trigger:** detecta la nueva entrada\n- **Limit:** se asegura de recuperar solo la ultima entrada",
+        "height": 300,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -980,
+        40
+      ],
+      "typeVersion": 1,
+      "id": "6f7dca04-3333-4f7c-af65-9c37c0921696",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### Buscar el proyecto obtenido en el limit\n- **Existe = salida = true** \n- **No existe = salida vacia = false**",
+        "height": 260,
+        "width": 260,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -660,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "f9fcd7c4-1fb4-4866-bcbd-b89bcfe453c7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "### Crea el proyecto si no existe\n- **Asana1**: crea el proyecto\n- **Sheets1**: actualiza los proyectos en un sheet que a su vez alimenta las opciones del formulario",
+        "height": 280,
+        "width": 300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "7061fe1a-eab5-4e8f-832f-8039521b3b78",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "### Obtiene informacion adicional\n- **Merge:** Fusiona cualquiera\n de las dos salidas\n- **Asana2:** obtiene informacion \ndel proyecto por su nombre \n- **Sheets:** obtiene datos de la \npersona designada(correo/tel)\n-**EditFields1:** Predefine datos a usar",
+        "height": 180,
+        "width": 940,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -980,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "a9997c6d-3422-4c4f-95e9-416ca9130f83",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "### Creacion de la tarea\n- **Code:** formatea la fecha a uno\n valido por asana\n- **Nodo Asana:** crea la tarea\n- **Edit Fields:** Define los datos \nfinales a usar. Integra **variable \nbandera** *'Recordatorio'* para el control\n del flujo",
+        "height": 180,
+        "width": 720,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -980,
+        620
+      ],
+      "typeVersion": 1,
+      "id": "0c2d111f-dd52-44fe-85a1-4d21413710d8",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "### Merge de salidas\n- Fusiona ambas \nsalidas en \nuna valida\npara cualquier \nfuente del flujo",
+        "height": 140,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -860,
+        900
+      ],
+      "typeVersion": 1,
+      "id": "d8bdf4d9-c34f-4042-968c-3f7ad99f1b2e",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Trigger flujo alternativo \n- **Trigger:** se activa cada hora\n- **Sheets:** recupera todos los \nproyectos existentes",
+        "width": 600
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2080,
+        180
+      ],
+      "typeVersion": 1,
+      "id": "8860e20b-d324-4c91-a591-bfe60b371c78",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "### Tareas por cada proyecto\n- **Asana:** obtiene todas las tareas\n en los proyectos\n- **Asana3:** obtiene los detalles \nde cada tarea",
+        "height": 180,
+        "width": 660,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2140,
+        420
+      ],
+      "typeVersion": 1,
+      "id": "87ecea31-c567-4814-8780-f42504dbbbd3",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "### Tareas por cada proyecto\n- **Loop:** asegura un recorrido \nindividual por tarea\n- **Asana:** obtiene los detalles \nindividuales de la tarea",
+        "height": 180,
+        "width": 660,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2220,
+        660
+      ],
+      "typeVersion": 1,
+      "id": "7a3a2281-4fdf-4453-a62c-c46d042e11b0",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "### Han pasado 48 horas?\nComprueba que hayan pasado 48 horas\n creada la tarea y siga sin completar\n\n- **If completada:** Comprueba el estado de \nla tarea en asana 'completed=true'\n- **Google Sheets:** Si la tarea esta \ncompletada en asana se registra como \ncompletada en la hoja de registro de \nactividades\n\n- **DateTime:** Recupera fecha de creacion\n mas 48 horas\n- **DateTime1:** Recuera la fecha actual\n",
+        "height": 360,
+        "width": 880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2280,
+        900
+      ],
+      "typeVersion": 1,
+      "id": "83812dd6-689a-4565-8898-46e7828ee1ce",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "### Recuperacion de datos de la tarea\n- **Sheets4:** Recupera datos de la persona designada\n- **Sheets5:** Recupera datos de la tarea\n- **Edit Fields2:** Define los datos finales a usar.\nIntegra **variable bandera** *'Recordatorio'* para el control del flujo",
+        "height": 300,
+        "width": 480,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1360,
+        960
+      ],
+      "typeVersion": 1,
+      "id": "76db7573-687b-4eeb-86a0-d1d2e89f6e43",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "### Redirije el flujo segun prioridad",
+        "height": 180,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        860
+      ],
+      "typeVersion": 1,
+      "id": "a812b9b3-fb50-4a93-afbc-07f1912cdfad",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "### Notificacion slack\n- **Slack1:** Recupera los usuarios\n- **Obtener usuario id:** Recupera la id del \nusuario relacionando con nombre o correo\n- **Slack:** Envia el mensaje al usuario esperado",
+        "width": 780
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -660,
+        1080
+      ],
+      "typeVersion": 1,
+      "id": "81ca4bb0-b297-4723-a576-e226764624cc",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "### Merge de salidas\n- Fusiona ambas de las en\nuna valida.\n*Evita redundancia*",
+        "height": 260,
+        "width": 170,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        180,
+        780
+      ],
+      "typeVersion": 1,
+      "id": "7f41ddea-f2b2-4065-b4fd-0d775e819a6b",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "### Notificaciones\nEnvia notifiacion a cada fuente segun sea el caso",
+        "height": 600,
+        "width": 180
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "835e3013-2b4e-4c60-a647-6c6df3c73827",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "### Control de flujo\nRecupera variable \nbandera \n*'Recordatorio'*\ny redirije el flujo segun\n el caso 'true' o 'false'",
+        "width": 300,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        180,
+        1100
+      ],
+      "typeVersion": 1,
+      "id": "36865bcb-55bb-4a8a-854e-66ce77feff8b",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "### Registro de actividades\nRealiza el registro final de la actividad solo con datos relevantes",
+        "height": 300,
+        "width": 180,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        460,
+        760
+      ],
+      "typeVersion": 1,
+      "id": "1ffc4189-162d-492f-8a66-953ab490f50e",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas",
+          "mode": "list",
+          "cachedResultName": "registoActividades",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xez25u5MLZZ54pw70pZtkZegbFs-UWCS--3wX-afmas/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ESTADO": "COMPLETADA",
+            "ID EN ASANA": "={{ $json.gid }}"
+          },
+          "matchingColumns": [
+            "ID EN ASANA"
+          ],
+          "schema": [
+            {
+              "id": "ID EN ASANA",
+              "displayName": "ID EN ASANA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TAREA",
+              "displayName": "TAREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DESCRIPCION",
+              "displayName": "DESCRIPCION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PROYECTO",
+              "displayName": "PROYECTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PRIORIDAD",
+              "displayName": "PRIORIDAD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PERSONA DESIGNADA",
+              "displayName": "PERSONA DESIGNADA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FECHA LIMITE",
+              "displayName": "FECHA LIMITE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "HORA LIMITE",
+              "displayName": "HORA LIMITE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ESTADO",
+              "displayName": "ESTADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1940,
+        940
+      ],
+      "id": "d9d42ac4-6f0f-4fc9-b74a-d0c92d304d0b",
+      "name": "Google Sheets6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QRGmAnC648fmedFh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f546c88b-ec55-4767-baaa-630d6933cac8",
+              "leftValue": "={{ $json.completed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1720,
+        700
+      ],
+      "id": "ddc6cf40-c478-4b7f-932d-a1cddf2c1966",
+      "name": "If completada"
+    },
+    {
+      "parameters": {
+        "content": "### If mas de 48h \nSe encaga de comprobar que \nhayan pasado 48horas de creada \nla tarea",
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1800,
+        1100
+      ],
+      "typeVersion": 1,
+      "id": "a483c838-3bdf-44a4-9427-092862e6bdf8",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9a13aa61-f19e-4faa-ba7d-fb2ac094ff40",
+              "leftValue": "={{ $('Date & Time').item.json.newDate }}",
+              "rightValue": "={{ $('Date & Time1').item.json.currentDate }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1540,
+        1140
+      ],
+      "id": "809433fc-2ace-428a-831f-3ded8e1bc402",
+      "name": "If mas de 48h"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -1760,
+        1360
+      ],
+      "id": "50999938-01f7-4074-90d9-2d5be0903976",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1960,
+        680
+      ],
+      "id": "7a363d37-9593-48ac-95f5-c9632e604b79",
+      "name": "Loop Over tareas"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        560
+      ],
+      "id": "c4bbdd13-d7be-495a-a8d5-2c94cb1c5a56",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "content": "### Merge3\nCual sea que sea la \nsalida de la tarea \nda paso a la siguiente\ntarea en la cola",
+        "height": 200,
+        "width": 340,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1980,
+        1320
+      ],
+      "typeVersion": 1,
+      "id": "53cd1d8a-197b-442d-bc9b-dd966e7c1a3b",
+      "name": "Sticky Note17"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Forms Trigger": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Asana Task": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack1": {
+      "main": [
+        [
+          {
+            "node": "Obtener usuario id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener usuario id": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Create Asana Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revisar prioridad": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slack1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asana1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Asana1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asana2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Asana2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "Asana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asana": {
+      "main": [
+        [
+          {
+            "node": "Asana3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asana3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over tareas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets4": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Date & Time1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time1": {
+      "main": [
+        [
+          {
+            "node": "If mas de 48h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Revisar prioridad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "WhatsApp Business Cloud1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Google Sheets7": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets6": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If completada": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If mas de 48h": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over tareas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over tareas": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If completada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cb845ba0-065c-45d7-917a-bc4d977e0fa2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "df6956714bf46bdd1fe9d05f17979ede73f91ca03c023ed389fabe1c721b4e29"
+  },
+  "id": "SpSa0rQytzJFwIPR",
+  "tags": []
+}
