@@ -30,11 +30,11 @@ Los campos de **Proyecto involucrado** y **Persona designada** utilizan datos pr
 
 - **Proyecto involucrado**: Carga opciones desde otra hoja que enumera los proyectos creados en Asana. Es necesario añadir al menos un proyecto manualmente, y se puede crear un nuevo proyecto directamente desde el formulario si se elige la opción "Otro".
 
-[Script Aquí](./scripts-appscript/proyectos/proyectos.gs)  
+[Script Aquí](scripts-appscript/proyectos/cargarOpcionesProyectos.gs)  
   
 - **Persona designada**: Se presenta como un menú desplegable que carga nombres de miembros desde una hoja de Google que almacena los datos de nombre, correo y teléfono. Es imprescindible que los nombres se correspondan con las cuentas de los miembros en Asana y Slack además deben ser cargados manualmente(se podría automatizar).  
 
-[Script Aquí](./scripts-appscript/miembros/miembros.gs)
+[Script Aquí](scripts-appscript/miembros/cargarOpcionesMiembros.gs)
 
 ### Proceso de Gestión de Tareas  
 
@@ -87,17 +87,21 @@ ngrok http http://localhost:5678
 ```
 # Estructura del proyecto
 
-│── /scripts-appscript/  *Códigos de Google Apps Script*
+│  
 
-│  ├── cargarOpcionesProyectos.gs
+├── /media/  # Recursos visuales  
 
-│  ├── cargarOpcionesMiembros.gs
+├── /scripts-appscript/  # Contiene los scripts de Google Apps Script  
 
-│  ├── README.md
+│  
 
-│── workflow.json  *JSON del workflow principal*
+├── README.md  # Documentación principal del proyecto  
 
-│── README.md  *Este archivo*
+│  
+
+├── workflow.json  # JSON del workflow principal  
+
+
 
 # Uso
 Copia el archivo workflow.json.
