@@ -11,7 +11,7 @@ Para activar el trigger en Google Apps Script para que este script se ejecute "A
 7. Haz clic en **Guardar** (Save).  
 
 Al final deberias obtener algo asi:
-![triggerConfigurado](/scripts-appscript/media/actualizarPreguntaProyectoInvolucrado.png)
+![triggerConfigurado](/media/actualizarPreguntaProyectoInvolucrado.png)
 
 ### Nota  
 
