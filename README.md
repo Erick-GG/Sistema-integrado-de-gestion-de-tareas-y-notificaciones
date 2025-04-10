@@ -89,9 +89,9 @@ ngrok http http://localhost:5678
 
 │── /scripts-appscript/  *Códigos de Google Apps Script*
 
-│  ├── cargarOpcionesFormulario1.gs
+│  ├── cargarOpcionesProyectos.gs
 
-│  ├── cargarOpcionesFormulario2.gs
+│  ├── cargarOpcionesMiembros.gs
 
 │  ├── README.md
 
