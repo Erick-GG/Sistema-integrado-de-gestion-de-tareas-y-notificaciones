@@ -1,7 +1,12 @@
 /**
  * Script para actualizar opciones de una pregunta existente en Google Forms
  * con las opciones en una hoja de cálculo
- */
+ *   
+ * Este script se utiliza para cargar los miembros designados desde una hoja de cálculo a   
+ * un formulario de Google. Es importante llenar manualmente la hoja de cálculo con datos   
+ * de miembros, asegurando la congruencia entre los datos de correo y teléfono   
+ * con las cuentas de Slack, WhatsApp y correo electrónico de los miembros.  
+ */  
 function actualizarPreguntaPersonaDesignada() {
   // Reemplaza estos IDs con los tuyos
   const FORM_ID = '<<tuFormID>>';
