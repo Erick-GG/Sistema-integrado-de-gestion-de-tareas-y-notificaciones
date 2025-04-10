@@ -10,5 +10,8 @@ Para activar el trigger en Google Apps Script y hacer que este script se ejecute
 6. Selecciona los permisos necesarios para permitir que el script se ejecute como tú.  
 7. Haz clic en **Guardar** (Save).  
 
+Al final deberias obtener algo asi:
+![triggerConfigurado](/scripts-appscript/media/actualizarPreguntaPersonaDesignada.png)
+
 ### Nota  
 **Consistencia de Datos**: Es fundamental llenar manualmente la hoja de cálculo con los miembros, asegurando que los datos de correo y teléfono sean congruentes con los utilizados para sus cuentas en Slack, WhatsApp y correo electrónico.  
