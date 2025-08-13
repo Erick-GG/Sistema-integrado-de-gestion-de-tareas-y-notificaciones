@@ -87,20 +87,15 @@ ngrok http http://localhost:5678
 ```
 # Estructura del proyecto
 
-│  
-
-├── /media/  # Recursos visuales  
-
+```bash
+│
+├── /media/  # Recursos visuales
 ├── /scripts-appscript/  # Contiene los scripts de Google Apps Script  
-
-│  
-
+│
 ├── README.md  # Documentación principal del proyecto  
-
-│  
-
+│
 ├── workflow.json  # JSON del workflow principal  
-
+```
 
 
 # Uso
